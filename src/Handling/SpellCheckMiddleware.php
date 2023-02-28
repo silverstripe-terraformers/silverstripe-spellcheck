@@ -22,14 +22,14 @@ class SpellCheckMiddleware implements HTTPMiddleware
      * @var string
      * @config
      */
-    private static $editor = 'cms';
+    private static string $editor = 'cms';
 
     public function __construct()
     {
         Deprecation::notice('2.0.0', 'Use SpellCheckAdminExtension instead', Deprecation::SCOPE_CLASS);
     }
 
-    public function process(HTTPRequest $request, callable $delegate)
+    public function process(HTTPRequest $request, callable $delegate): callable
     {
         return $delegate($request);
     }
@@ -39,7 +39,7 @@ class SpellCheckMiddleware implements HTTPMiddleware
      *
      * @return string[]
      */
-    public function getLanguages()
+    public function getLanguages(): array
     {
         $languages = [];
         foreach (SpellController::get_locales() as $locale) {
@@ -56,7 +56,7 @@ class SpellCheckMiddleware implements HTTPMiddleware
      *
      * @return string|false
      */
-    public function getDefaultLocale()
+    public function getDefaultLocale(): string | false
     {
         // Check configuration first
         $defaultLocale = SpellController::config()->get('default_locale');

@@ -23,7 +23,7 @@ class SpellCheckAdminExtension extends Extension
      * @var string
      * @config
      */
-    private static $editor = 'cms';
+    private static string $editor = 'cms';
 
     public function init()
     {
@@ -57,7 +57,7 @@ class SpellCheckAdminExtension extends Extension
      *
      * @return string[]
      */
-    public function getLanguages()
+    public function getLanguages(): array
     {
         $languages = [];
         foreach (SpellController::get_locales() as $locale) {
@@ -74,7 +74,7 @@ class SpellCheckAdminExtension extends Extension
      *
      * @return string|false
      */
-    public function getDefaultLocale()
+    public function getDefaultLocale(): string | false
     {
         // Check configuration first
         $defaultLocale = SpellController::config()->get('default_locale');

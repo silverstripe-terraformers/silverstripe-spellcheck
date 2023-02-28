@@ -14,7 +14,7 @@ class SpellException extends Exception
      * @param int $code HTTP error code
      * @param Exception $previous
      */
-    public function __construct($message, $code, $previous = null)
+    public function __construct(string $message, int $code, $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }

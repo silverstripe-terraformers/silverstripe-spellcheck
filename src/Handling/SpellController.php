@@ -5,6 +5,7 @@ namespace SilverStripe\SpellCheck\Handling;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTP;
+use SilverStripe\Control\HTTPResponse;
 use SilverStripe\i18n\i18n;
 use SilverStripe\SpellCheck\Data\SpellProvider;
 use SilverStripe\Security\Permission;
@@ -22,7 +23,7 @@ class SpellController extends Controller
      * @var array
      * @config
      */
-    private static $locales = [];
+    private static array $locales = [];
 
     /**
      * Optional: define the default locale for TinyMCE instances. If not defined, the first locale in the list of
@@ -31,7 +32,7 @@ class SpellController extends Controller
      * @var string|bool
      * @config
      */
-    private static $default_locale = false;
+    private static string|bool $default_locale = false;
 
     /**
      * Necessary permission required to spellcheck. Set to empty or null to disable restrictions.
@@ -39,7 +40,7 @@ class SpellController extends Controller
      * @var string
      * @config
      */
-    private static $required_permission = 'CMS_ACCESS_CMSMain';
+    private static string $required_permission = 'CMS_ACCESS_CMSMain';
 
     /**
      * Enable security token for spellchecking
@@ -47,7 +48,7 @@ class SpellController extends Controller
      * @var bool
      * @config
      */
-    private static $enable_security_token = true;
+    private static bool $enable_security_token = true;
 
     /**
      * If true, all error messages will be returned with a 200 OK HTTP header code
@@ -55,7 +56,7 @@ class SpellController extends Controller
      * @var bool
      * @config
      */
-    private static $return_errors_as_ok = false;
+    private static bool $return_errors_as_ok = false;
 
     /**
      * Dependencies required by this controller
@@ -63,30 +64,30 @@ class SpellController extends Controller
      * @var array
      * @config
      */
-    private static $dependencies = [
+    private static array $dependencies = [
         'Provider' => '%$' . SpellProvider::class,
     ];
 
     /**
      * Spellcheck provider
      *
-     * @var SpellProvider
+     * @var SpellProvider|null
      */
-    protected $provider = null;
+    protected ?SpellProvider $provider = null;
 
     /**
      * Parsed request data
      *
      * @var array|null Null if not set or an array if parsed
      */
-    protected $data = null;
+    protected ?array $data = null;
 
     /**
      * Get the current provider
      *
      * @return SpellProvider
      */
-    public function getProvider()
+    public function getProvider(): SpellProvider
     {
         return $this->provider;
     }
@@ -96,7 +97,7 @@ class SpellController extends Controller
      *
      * @return array
      */
-    public static function get_locales()
+    public static function get_locales(): array
     {
         // Default to current locale if none configured
         return self::config()->get('locales') ?: array(i18n::get_locale());
@@ -108,7 +109,7 @@ class SpellController extends Controller
      * @param SpellProvider $provider
      * @return $this
      */
-    public function setProvider(SpellProvider $provider)
+    public function setProvider(SpellProvider $provider): self
     {
         $this->provider = $provider;
         return $this;
@@ -118,17 +119,16 @@ class SpellController extends Controller
      * Parse the output response
      *
      * @param array|null $result Result data
-     * @param array|null $error Error data
      * @param int $code HTTP Response code
      */
-    protected function result($result, $code = 200)
+    protected function result(?array $result, int $code = 200): HTTPResponse
     {
         $this->response->setStatusCode($code);
         $this->response->setBody(json_encode($result));
         return $this->response;
     }
 
-    protected function success($result)
+    protected function success($result): HTTPResponse
     {
         return $this->result($result);
     }
@@ -139,7 +139,7 @@ class SpellController extends Controller
      * @param string $message
      * @param int $code HTTP error code
      */
-    protected function error($message, $code)
+    protected function error(string $message, int $code): HTTPResponse
     {
         // Some clients may require errors to be returned with a 200 OK header code
         if ($this->config()->get('return_errors_as_ok')) {
@@ -149,7 +149,7 @@ class SpellController extends Controller
         return $this->result(['error' => $message], $code);
     }
 
-    public function index()
+    public function index(): HTTPResponse
     {
         $this->setHeaders();
 
@@ -226,7 +226,7 @@ class SpellController extends Controller
      * @param string[] $words
      * @return array
      */
-    protected function assembleData($locale, $words)
+    protected function assembleData(string $locale, array $words): array
     {
         $result = [
             'words' => [],
@@ -258,7 +258,7 @@ class SpellController extends Controller
      *
      * @return array Parsed data with an id, method, and params key
      */
-    protected function getRequestData()
+    protected function getRequestData(): array
     {
         // Check if data needs to be parsed
         if ($this->data === null) {
@@ -274,12 +274,12 @@ class SpellController extends Controller
      * @param array $data
      * @return string|false
      */
-    protected function getLocale(array $data)
+    protected function getLocale(array $data): string | false
     {
         $locale = $data['lang'];
 
         // Check if the locale is actually a language
-        if (strpos($locale ?? '', '_') === false) {
+        if (!str_contains($locale ?? '', '_')) {
             $locale = i18n::getData()->localeFromLang($locale);
         }
 

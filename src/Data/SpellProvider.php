@@ -11,7 +11,7 @@ interface SpellProvider
      * @param array $words List of words to spellcheck.
      * @return array List of misspelled words.
      */
-    public function checkWords($locale, $words);
+    public function checkWords(string $locale, array $words): array;
 
     /**
      * Returns suggestions of for a specific word.
@@ -20,5 +20,5 @@ interface SpellProvider
      * @param string $word Specific word to get suggestions for.
      * @return array List of suggestions for the specified word.
      */
-    public function getSuggestions($locale, $word);
+    public function getSuggestions(string $locale, string $word);
 }
